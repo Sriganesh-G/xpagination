@@ -31,7 +31,7 @@ button:disabled {
   background-color: rgb(12, 135, 12);
 }
 
-span {
+.currNum {
   background-color: rgb(12, 135, 12);
-  padding: 2.5%;
+  padding: 1%;
 }

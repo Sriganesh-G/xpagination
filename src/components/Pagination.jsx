@@ -12,7 +12,7 @@ const Pagination = ({
       <button onClick={handlePrevious} disabled={currentPage === 1}>
         Previous
       </button>
-      <span>{currentPage}</span>
+      <span className="currNum">{currentPage}</span>
       <button onClick={handleNext} disabled={currentPage === totalPages}>
         Next
       </button>
