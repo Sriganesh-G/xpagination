@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import EmployeeTable from "./components/EmployeeTable";
+import Pagination from "./components/Pagination";
 
 function App() {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [employeesPerPage] = useState(10);
+  const [itemsPerPage] = useState(10);
+  const [error, setError] = useState(null);
 
-  // Fetching data
+  // fetching data
   useEffect(() => {
     const fetchData = () => {
       fetch(
@@ -18,55 +20,47 @@ function App() {
           setData(res);
         })
         .catch((e) => {
-          alert("Failed to fetch data"); // Add alert for failed fetch
+          alert("Failed to fetch data");
           console.error("Failed to fetch data", e);
         });
     };
 
     fetchData();
+    console.log(data);
   }, []);
 
-  // Logic to calculate the current employees based on the current page
-  const indexOfLastEmployee = currentPage * employeesPerPage;
-  const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
-  const currentEmployees = data.slice(
-    indexOfFirstEmployee,
-    indexOfLastEmployee
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+
+  const currentData = data.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
-  // Handle page change
-  const nextPage = () => {
-    if (currentPage < Math.ceil(data.length / employeesPerPage)) {
-      setCurrentPage((prev) => prev + 1);
-    }
+  const handleNext = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1);
-    }
+  const handlePrevious = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
-
   return (
-    <div>
-      <div>
-        <h1>Employee Data Table</h1>
-      </div>
-      <EmployeeTable data={currentEmployees} />
-
-      {/* Pagination Controls */}
-      <div style={{ marginTop: "20px" }}>
-        <button onClick={prevPage} disabled={currentPage === 1}>
-          Previous
-        </button>
-        <span> Page {currentPage} </span>
-        <button
-          onClick={nextPage}
-          disabled={currentPage === Math.ceil(data.length / employeesPerPage)}
-        >
-          Next
-        </button>
-      </div>
+    <div className="App">
+      <h1>Employee Data Table</h1>
+      {error ? (
+        <div>
+          <p>{error}</p>
+        </div>
+      ) : (
+        <>
+          <EmployeeTable data={currentData} />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handleNext={handleNext}
+            handlePrevious={handlePrevious}
+          />
+        </>
+      )}
     </div>
   );
 }
