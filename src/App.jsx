@@ -1,66 +1,64 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import EmployeeTable from "./components/EmployeeTable";
-import Pagination from "./components/Pagination";
 
 function App() {
-  const [data, setData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
-  const [error, setError] = useState(null);
+  const [details, setDetails] = useState([]);
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 10; // Number of items per page
 
-  // fetching data
-  useEffect(() => {
-    const fetchData = () => {
-      fetch(
+  // Fetching data
+  const fetchData = async () => {
+    try {
+      const resp = await fetch(
         "https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json"
-      )
-        .then((res) => res.json())
-        .then((res) => {
-          setData(res);
-        })
-        .catch((e) => {
-          alert("Failed to fetch data");
-          console.error("Failed to fetch data", e);
-        });
-    };
+      );
+      const data = await resp.json();
+      setDetails(data);
+    } catch (err) {
+      alert("Failed to fetch data");
+    }
+  };
 
+  // Handle decrement
+  const handleDecrement = () => {
+    if (page === 1) return; // Do nothing if on the first page
+    setPage((prevPage) => prevPage - 1); // Go to the previous page
+  };
+
+  // Handle increment
+  const handleIncrement = () => {
+    if (page >= Math.ceil(details.length / itemsPerPage)) return; // Do nothing if on the last page
+    setPage((prevPage) => prevPage + 1); // Go to the next page
+  };
+
+  useEffect(() => {
     fetchData();
-    console.log(data);
   }, []);
 
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  // Calculate the current data to display
+  const indexOfLastItem = page * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = details.slice(indexOfFirstItem, indexOfLastItem);
 
-  const currentData = data.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  };
-
-  const handlePrevious = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
   return (
-    <div className="App">
-      <h1>Employee Data Table</h1>
-      {error ? (
-        <div>
-          <p>{error}</p>
-        </div>
-      ) : (
-        <>
-          <EmployeeTable data={currentData} />
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            handleNext={handleNext}
-            handlePrevious={handlePrevious}
-          />
-        </>
-      )}
+    <div>
+      <div>
+        <h1>Employee Data Table</h1>
+      </div>
+      <EmployeeTable data={currentItems} />
+      <div>
+        <button onClick={handleDecrement} disabled={page === 1}>
+          Previous
+        </button>
+        <span className="currNum"> {page} </span>
+        <button
+          onClick={handleIncrement}
+          disabled={page >= Math.ceil(details.length / itemsPerPage)}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }
