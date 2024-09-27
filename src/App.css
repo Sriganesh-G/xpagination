@@ -1,0 +1,37 @@
+/* src/App.css */
+* {
+  padding: 0px;
+  margin: 0px;
+  box-sizing: border-box;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: rgb(12, 135, 12);
+}
+
+th,
+td {
+  padding: 8px;
+  text-align: left;
+}
+
+button {
+  margin: 10px;
+  padding: 5px 10px;
+  cursor: pointer;
+  background-color: rgb(12, 135, 12);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  background-color: rgb(12, 135, 12);
+}
+
+span {
+  background-color: rgb(12, 135, 12);
+  padding: 2.5%;
+}
